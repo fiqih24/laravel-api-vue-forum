@@ -15,6 +15,7 @@ class QuestionController extends Controller
     public function index()
     {
       return QuestionResource::collection(Question::latest()->get());
+      // return Question::latest()->get();
     }
 
     /**
@@ -51,7 +52,8 @@ class QuestionController extends Controller
      */
     public function update(Request $request, Question $question)
     {
-        //
+        // $question->update($request->all());
+        return response($question);
     }
 
     /**
