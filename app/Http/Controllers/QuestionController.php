@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Model\Question;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\QuestionResource;
 class QuestionController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('jwt', ['except' => ['index','show']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,8 +22,8 @@ class QuestionController extends Controller
      */
     public function index()
     {
-      return QuestionResource::collection(Question::latest()->get());
       // return Question::latest()->get();
+      return QuestionResource::collection(Question::latest()->get());
     }
 
     /**
@@ -27,8 +35,15 @@ class QuestionController extends Controller
     public function store(Request $request)
     {
       // auth()->user()->question()->create($request->all());
-      Question::create($request->all());
-      return response('Created',201);
+      // Question::create($request->all());
+      $question  = new Question();
+      $question->title = request('title');
+      $question->slug = str_replace(' ','-',request('title'));
+      $question->body = request('body');
+      $question->category_id = request('category_id');
+      $question->user_id = auth()->user()->id;
+      $question->save();
+      return response($question->slug,200);
     }
 
     /**
@@ -40,6 +55,8 @@ class QuestionController extends Controller
     public function show(Question $question)
     {
         return new QuestionResource($question);
+        // return $question;
+        // return $question->categories->name;
     }
 
 
@@ -52,8 +69,8 @@ class QuestionController extends Controller
      */
     public function update(Request $request, Question $question)
     {
-        // $question->update($request->all());
-        return response($question);
+        $question->update($request->all());
+        return response('Updated',200);
     }
 
     /**

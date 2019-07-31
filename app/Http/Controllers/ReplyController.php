@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Model\Question;
 use App\Model\Reply;
+use App\User;
 use App\Http\Resources\ReplyResource;
 use Illuminate\Http\Request;
+use App\Notifications\ReplyNotification;
 
 class ReplyController extends Controller
 {
@@ -14,6 +16,11 @@ class ReplyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('jwt', ['except' => ['index']]);
+    }
+
     public function index(Question $question)
     {
         return ReplyResource::collection($question->replies);
@@ -28,7 +35,10 @@ class ReplyController extends Controller
     public function store(Question $question ,Request $request)
     {
           $reply = $question->replies()->create($request->all());
-        return response(['reply'=>new ReplyResource($reply)],201);
+          $user = User::find(auth()->id());
+          $user->notify(new ReplyNotification($reply));
+        return response(new ReplyResource($reply),201);
+
     }
 
     /**
@@ -51,8 +61,8 @@ class ReplyController extends Controller
      */
     public function update(Question $question,Request $request, Reply $reply)
     {
-      $reply->update($request->all());
-      return response('updated',200);
+       $reply->update($request->all());
+      return response(new ReplyResource($reply),200);
     }
 
     /**

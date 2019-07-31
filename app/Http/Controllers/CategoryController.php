@@ -3,10 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Model\Category;
+use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+
+    public function __construct()
+    {
+        // $this->middleware('jwt', ['except' => ['index']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,9 +21,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return Category::all();
+        // return Category::all();
+        return  CategoryResource::collection(Category::latest()->get());
     }
-
 
     /**
      * Store a newly created resource in storage.

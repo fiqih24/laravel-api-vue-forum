@@ -12,9 +12,9 @@ iceProvider within a group which
 |
 */
 // 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/', function () {
+    return view('home');
+});
 //
 // Auth::routes();
 //

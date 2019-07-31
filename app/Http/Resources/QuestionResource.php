@@ -17,9 +17,14 @@ class QuestionResource extends JsonResource
         return[
           'title'=>$this->title,
           'path'=>$this->path,
+          'replies'=>$this->replies,
+          'reply_count'=>$this->replies->count(),
+          'slug'=>$this->slug,
           'body'=>$this->body,
+          'category'=>$this->category->name,
           'created_at' =>$this->created_at->diffForHumans(),
           'user'=>$this->user->name,
+          'user_id'=>$this->user_id,
         ];
     }
 }
